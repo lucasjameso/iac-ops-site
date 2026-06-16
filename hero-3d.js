@@ -1,27 +1,14 @@
 /* ============================================================
-   IAC — 3D Workflow Engine Hero  v5.0 (PRODUCTION)
+   IAC — 3D Workflow Engine Hero  v7.0 (n8n-STYLE FINAL)
    Three.js r128
 
-   SHOWSTOPPER: "The Operational Engine Powers On"
-   Five volumetric glass-metal nodes with canvas-texture labels
-   assemble in 3D space, connected by glowing spline tubes.
-   Coral data-pulses travel the network. Slow cinematic camera
-   glide. Mouse parallax. Additive bloom glow.
+   A real n8n-style automation workflow rendered in dramatic 3D.
+   Clean rounded-rect node cards with icons + labels, bezier
+   connection wires, cascading green execution highlights.
 
-   TIMELINE (ms from first frame):
-     0    – ambient dust, grid, scene fades in
-     400  – INTAKE node scales in
-     620  – AUTOMATE node scales in
-     820  – INTEGRATE node scales in
-     1020 – OPERATE node scales in
-     1240 – SOURCE node scales in
-     1440 – edges draw in (staggered, 150ms apart)
-     1800 – first data pulses launch
-     ~2800– SOURCE goes ONLINE, coral surge
-     9000 – periodic surge repeats
+   WORKFLOW:
+     Trigger → Validate → CRM → Database → Notify
 
-   MOBILE: reduced geometry, 1.5x DPR max.
-   REDUCED MOTION: single static frame, no RAF.
    ============================================================ */
 (function () {
   'use strict';
@@ -30,612 +17,539 @@
   if (!canvas || !window.THREE) return;
   var THREE = window.THREE;
 
-  var FORCE  = /[?&]motion=1/.test(location.search);
-  var REDUCE = !FORCE && window.matchMedia &&
+  var REDUCE = window.matchMedia &&
                window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var MOBILE = window.innerWidth < 700;
 
   /* ================================================================
      RENDERER
      ================================================================ */
-  var W   = canvas.offsetWidth  || 900;
-  var H   = canvas.offsetHeight || 600;
+  var W = canvas.offsetWidth || 900;
+  var H = canvas.offsetHeight || 600;
   var DPR = Math.min(window.devicePixelRatio || 1, MOBILE ? 1.5 : 2);
 
   var renderer = new THREE.WebGLRenderer({
-    canvas: canvas,
-    antialias: !MOBILE,
-    alpha: false,
-    powerPreference: 'high-performance'
+    canvas: canvas, antialias: true, alpha: false
   });
   renderer.setPixelRatio(DPR);
   renderer.setSize(W, H);
-  renderer.setClearColor(0x0a0a0a, 1);
+  renderer.setClearColor(0x0f1117, 1);
 
   /* ================================================================
      SCENE & CAMERA
      ================================================================ */
   var scene = new THREE.Scene();
-  scene.fog = new THREE.FogExp2(0x0a0a0a, MOBILE ? 0.036 : 0.022);
 
-  var camera = new THREE.PerspectiveCamera(50, W / H, 0.1, 200);
-  camera.position.set(0, 0.8, 16);
-  camera.lookAt(0, 0, 0);
+  // Camera: slightly elevated, looking at the workflow with subtle perspective
+  var camera = new THREE.PerspectiveCamera(40, W / H, 0.1, 200);
+  camera.position.set(0.4, 3.0, 14.0);
+  camera.lookAt(0.4, 0.5, 0);
 
   /* ================================================================
      LIGHTING
      ================================================================ */
-  scene.add(new THREE.AmbientLight(0x1a1520, 4.5));
+  scene.add(new THREE.AmbientLight(0x2a2e3a, 5.0));
 
-  var keyLight = new THREE.DirectionalLight(0xfff5ee, 2.0);
-  keyLight.position.set(8, 14, 12);
+  var keyLight = new THREE.DirectionalLight(0xffffff, 1.4);
+  keyLight.position.set(4, 10, 8);
   scene.add(keyLight);
 
-  var rimLight = new THREE.DirectionalLight(0x3a5080, 0.9);
-  rimLight.position.set(-12, -3, 4);
+  var fillLight = new THREE.DirectionalLight(0x4466aa, 0.6);
+  fillLight.position.set(-6, 3, -4);
+  scene.add(fillLight);
+
+  var rimLight = new THREE.DirectionalLight(0x6644aa, 0.3);
+  rimLight.position.set(0, -2, 8);
   scene.add(rimLight);
 
-  var coralPt = new THREE.PointLight(0xe0623c, 9.0, 32);
-  coralPt.position.set(0, 0, 7);
-  scene.add(coralPt);
-
-  var coldPt = new THREE.PointLight(0x2a3a5a, 4.5, 26);
-  coldPt.position.set(-8, 6, -4);
-  scene.add(coldPt);
-
-  var warmFill = new THREE.PointLight(0xff8844, 3.0, 22);
-  warmFill.position.set(9, -2, 5);
-  scene.add(warmFill);
-
   /* ================================================================
-     GRID FLOOR
+     DOT GRID (n8n canvas style)
      ================================================================ */
   (function () {
-    var SIZE = 30, DIVS = 30;
-    var step = SIZE / DIVS;
-    var verts = [];
-    for (var i = 0; i <= DIVS; i++) {
-      var v = -SIZE / 2 + i * step;
-      verts.push(-SIZE/2, -5.5, v,  SIZE/2, -5.5, v);
-      verts.push(v, -5.5, -SIZE/2,  v, -5.5,  SIZE/2);
+    var GRID = MOBILE ? 30 : 50;
+    var SPACING = 0.9;
+    var positions = [], colors = [];
+    for (var gx = -GRID/2; gx <= GRID/2; gx++) {
+      for (var gz = -GRID/2; gz <= GRID/2; gz++) {
+        positions.push(gx * SPACING, -0.01, gz * SPACING);
+        var dist = Math.sqrt(gx*gx + gz*gz) / (GRID * 0.45);
+        var alpha = Math.max(0, 0.6 - dist * 0.5);
+        colors.push(alpha * 0.45, alpha * 0.50, alpha * 0.65);
+      }
     }
     var geo = new THREE.BufferGeometry();
-    geo.setAttribute('position', new THREE.Float32BufferAttribute(verts, 3));
-    var mat = new THREE.LineBasicMaterial({ color: 0x1e1e1e, transparent: true, opacity: 0.85 });
-    scene.add(new THREE.LineSegments(geo, mat));
+    geo.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+    geo.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+    var mat = new THREE.PointsMaterial({
+      size: 0.06, vertexColors: true, transparent: true, opacity: 1.0,
+      depthWrite: false, sizeAttenuation: true
+    });
+    scene.add(new THREE.Points(geo, mat));
   })();
 
   /* ================================================================
-     NODE LABEL TEXTURES
-     Creates a canvas texture for each node with label + sub text
+     WORKFLOW GROUP — tilted for perspective
      ================================================================ */
-  function makeNodeTexture(label, sub, isDb) {
-    var cw = isDb ? 256 : 220, ch = 80;
-    var c  = document.createElement('canvas');
-    c.width = cw; c.height = ch;
-    var ctx = c.getContext('2d');
-
-    // Background
-    ctx.fillStyle = 'rgba(0,0,0,0)';
-    ctx.fillRect(0, 0, cw, ch);
-
-    // Label text
-    ctx.font = 'bold 13px "DM Mono", monospace';
-    ctx.fillStyle = 'rgba(255,255,255,0.88)';
-    ctx.textBaseline = 'top';
-    ctx.fillText(label, 28, 12);
-
-    // Divider line
-    ctx.strokeStyle = 'rgba(255,255,255,0.18)';
-    ctx.lineWidth = 1;
-    ctx.beginPath();
-    ctx.moveTo(0, 42); ctx.lineTo(cw, 42);
-    ctx.stroke();
-
-    // Sub text
-    ctx.font = '10px "DM Mono", monospace';
-    ctx.fillStyle = 'rgba(255,255,255,0.38)';
-    ctx.fillText(sub, 28, 50);
-
-    var tex = new THREE.CanvasTexture(c);
-    return tex;
-  }
+  var workflowGroup = new THREE.Group();
+  workflowGroup.rotation.x = -0.22;
+  workflowGroup.rotation.y = 0.03;
+  workflowGroup.scale.set(0.95, 0.95, 0.95);
+  workflowGroup.position.set(0.2, 0.3, 0);
+  scene.add(workflowGroup);
 
   /* ================================================================
-     NODE DEFINITIONS
+     NODE CARD BUILDER
      ================================================================ */
-  var NODE_DEFS = [
-    { id:'intake',    p:[-5.8,  0.0,  0.0], label:'INTAKE',          sub:'TRIGGER',  kind:'trigger' },
-    { id:'automate',  p:[-0.3,  2.5,  0.7], label:'AUTOMATE',        sub:'TASK',     kind:'proc'    },
-    { id:'integrate', p:[-0.3,  0.0, -0.7], label:'INTEGRATE',       sub:'SYNC',     kind:'proc'    },
-    { id:'operate',   p:[-0.3, -2.5,  0.7], label:'OPERATE',         sub:'METRICS',  kind:'proc'    },
-    { id:'source',    p:[ 5.8,  0.0,  0.0], label:'SOURCE OF TRUTH', sub:'DATABASE', kind:'db'      }
-  ];
+  function makeRoundedRectShape(w, h, r) {
+    var s = new THREE.Shape();
+    var x = -w/2, y = -h/2;
+    s.moveTo(x + r, y);
+    s.lineTo(x + w - r, y);
+    s.quadraticCurveTo(x + w, y, x + w, y + r);
+    s.lineTo(x + w, y + h - r);
+    s.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+    s.lineTo(x + r, y + h);
+    s.quadraticCurveTo(x, y + h, x, y + h - r);
+    s.lineTo(x, y + r);
+    s.quadraticCurveTo(x, y, x + r, y);
+    return s;
+  }
 
-  var APPEAR_TIMES = { intake:400, automate:620, integrate:820, operate:1020, source:1240 };
-
-  var nodeMap   = {};
-  var nodeGroup = new THREE.Group();
-  scene.add(nodeGroup);
-
-  NODE_DEFS.forEach(function (def) {
-    var isDb = def.kind === 'db';
-    var nw   = isDb ? 2.3  : 1.75;
-    var nh   = isDb ? 0.95 : 0.76;
-    var nd   = 0.24;
-
+  function createNodeCard(config) {
     var group = new THREE.Group();
+    var cardW = 1.35;
+    var cardH = 1.15;
+    var cardD = 0.10;
+    var cornerR = 0.22;
 
-    /* ---- Main shell ---- */
-    var shellGeo = new THREE.BoxGeometry(nw, nh, nd);
-    var shellMat = new THREE.MeshStandardMaterial({
-      color: 0x1e1e24,
-      metalness: 0.75,
-      roughness: 0.22,
+    /* Card body */
+    var shape = makeRoundedRectShape(cardW, cardH, cornerR);
+    var cardGeo = new THREE.ExtrudeGeometry(shape, { depth: cardD, bevelEnabled: false });
+    var cardMat = new THREE.MeshStandardMaterial({
+      color: 0x1c2030,
+      metalness: 0.05,
+      roughness: 0.8,
       transparent: true,
-      opacity: 0.95
+      opacity: 0.96
     });
-    group.add(new THREE.Mesh(shellGeo, shellMat));
+    group.add(new THREE.Mesh(cardGeo, cardMat));
 
-    /* ---- Edge wireframe ---- */
-    var edgesGeo = new THREE.EdgesGeometry(shellGeo);
-    var edgesMat = new THREE.LineBasicMaterial({ color: 0x4a4a58, transparent: true, opacity: 0.75 });
-    group.add(new THREE.LineSegments(edgesGeo, edgesMat));
+    /* Border */
+    var borderShape = makeRoundedRectShape(cardW, cardH, cornerR);
+    var borderPoints = borderShape.getPoints(60);
+    var borderGeo = new THREE.BufferGeometry().setFromPoints(
+      borderPoints.map(function(p) { return new THREE.Vector3(p.x, p.y, cardD + 0.001); })
+    );
+    var borderMat = new THREE.LineBasicMaterial({ color: 0x3a4050, transparent: true, opacity: 0.85 });
+    group.add(new THREE.Line(borderGeo, borderMat));
 
-    /* ---- Coral top accent bar ---- */
-    var accentGeo = new THREE.BoxGeometry(nw + 0.02, 0.055, nd + 0.02);
-    var accentMat = new THREE.MeshBasicMaterial({ color: 0xe0623c });
-    var accent    = new THREE.Mesh(accentGeo, accentMat);
-    accent.position.y = nh / 2 + 0.027;
-    group.add(accent);
+    /* Execution highlight border */
+    var hlBorderMat = new THREE.LineBasicMaterial({ color: 0x4ecb71, transparent: true, opacity: 0.0 });
+    group.add(new THREE.Line(borderGeo.clone(), hlBorderMat));
 
-    /* ---- Label texture plane ---- */
-    var labelTex = makeNodeTexture(def.label, def.sub, isDb);
-    var labelGeo = new THREE.PlaneGeometry(nw - 0.06, nh - 0.06);
-    var labelMat = new THREE.MeshBasicMaterial({
-      map: labelTex,
-      transparent: true,
-      opacity: 0.9,
-      depthWrite: false
-    });
-    var labelPlane = new THREE.Mesh(labelGeo, labelMat);
-    labelPlane.position.z = nd / 2 + 0.002;
-    group.add(labelPlane);
-
-    /* ---- Front face inner glow (additive) ---- */
-    var faceGeo = new THREE.PlaneGeometry(nw - 0.08, nh - 0.08);
-    var faceMat = new THREE.MeshBasicMaterial({
-      color: 0xe0623c,
-      transparent: true,
-      opacity: 0.0,
-      blending: THREE.AdditiveBlending,
-      depthWrite: false
-    });
-    var face = new THREE.Mesh(faceGeo, faceMat);
-    face.position.z = nd / 2 + 0.003;
-    group.add(face);
-
-    /* ---- Pip dot ---- */
-    var pipGeo = new THREE.SphereGeometry(0.065, 8, 8);
-    var pipMat = new THREE.MeshBasicMaterial({ color: 0xe0623c });
-    var pip    = new THREE.Mesh(pipGeo, pipMat);
-    pip.position.set(-nw / 2 + 0.22, 0.07, nd / 2 + 0.08);
-    group.add(pip);
-
-    /* ---- Halo ring (additive) ---- */
-    var haloGeo = new THREE.RingGeometry(0.62, 0.72, 40);
-    var haloMat = new THREE.MeshBasicMaterial({
-      color: 0xe0623c,
-      transparent: true,
-      opacity: 0.0,
-      blending: THREE.AdditiveBlending,
-      depthWrite: false,
-      side: THREE.DoubleSide
-    });
-    var halo = new THREE.Mesh(haloGeo, haloMat);
-    halo.position.z = nd / 2 + 0.04;
-    group.add(halo);
-
-    /* ---- Outer glow volume (additive, large) ---- */
-    var glowGeo = new THREE.BoxGeometry(nw + 0.65, nh + 0.65, nd + 0.65);
+    /* Execution glow plane behind card */
+    var glowShape = makeRoundedRectShape(cardW + 0.4, cardH + 0.4, cornerR + 0.12);
+    var glowGeo = new THREE.ShapeGeometry(glowShape);
     var glowMat = new THREE.MeshBasicMaterial({
-      color: 0xe0623c,
-      transparent: true,
-      opacity: 0.0,
-      blending: THREE.AdditiveBlending,
-      depthWrite: false,
-      side: THREE.BackSide
+      color: 0x4ecb71, transparent: true, opacity: 0.0,
+      blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide
     });
-    group.add(new THREE.Mesh(glowGeo, glowMat));
+    var glowMesh = new THREE.Mesh(glowGeo, glowMat);
+    glowMesh.position.z = -0.02;
+    group.add(glowMesh);
 
-    group.position.set(def.p[0], def.p[1], def.p[2]);
-    group.scale.set(0.001, 0.001, 0.001);
+    /* Icon background circle */
+    var iconBgGeo = new THREE.CircleGeometry(0.38, 32);
+    var iconBgMat = new THREE.MeshBasicMaterial({
+      color: config.iconBg || 0x2a2e38, transparent: true, opacity: 0.92
+    });
+    var iconBg = new THREE.Mesh(iconBgGeo, iconBgMat);
+    iconBg.position.set(0, 0.28, cardD + 0.005);
+    group.add(iconBg);
+
+    /* Icon text */
+    var ic = document.createElement('canvas');
+    ic.width = 64; ic.height = 64;
+    var ictx = ic.getContext('2d');
+    ictx.clearRect(0, 0, 64, 64);
+    ictx.font = '34px sans-serif';
+    ictx.textAlign = 'center';
+    ictx.textBaseline = 'middle';
+    ictx.fillStyle = config.iconColor || '#ffffff';
+    ictx.fillText(config.icon, 32, 34);
+    var iconTex = new THREE.CanvasTexture(ic);
+    var iconGeo = new THREE.PlaneGeometry(0.56, 0.56);
+    var iconMat = new THREE.MeshBasicMaterial({ map: iconTex, transparent: true, depthWrite: false });
+    var iconMesh = new THREE.Mesh(iconGeo, iconMat);
+    iconMesh.position.set(0, 0.28, cardD + 0.01);
+    group.add(iconMesh);
+
+    /* Label */
+    var lc = document.createElement('canvas');
+    lc.width = 256; lc.height = 56;
+    var lctx = lc.getContext('2d');
+    lctx.clearRect(0, 0, 256, 56);
+    lctx.font = 'bold 17px system-ui, -apple-system, sans-serif';
+    lctx.textAlign = 'center';
+    lctx.textBaseline = 'top';
+    lctx.fillStyle = '#e4e6ec';
+    lctx.fillText(config.label, 128, 4);
+    if (config.sub) {
+      lctx.font = '12px system-ui, sans-serif';
+      lctx.fillStyle = '#6a6e7a';
+      lctx.fillText(config.sub, 128, 28);
+    }
+    var labelTex = new THREE.CanvasTexture(lc);
+    var labelGeo = new THREE.PlaneGeometry(cardW - 0.2, 0.44);
+    var labelMat = new THREE.MeshBasicMaterial({ map: labelTex, transparent: true, depthWrite: false });
+    var labelMesh = new THREE.Mesh(labelGeo, labelMat);
+    labelMesh.position.set(0, -0.42, cardD + 0.005);
+    group.add(labelMesh);
+
+    /* Input port */
+    if (config.hasInput) {
+      var inGeo = new THREE.CircleGeometry(0.09, 16);
+      var inMat = new THREE.MeshBasicMaterial({ color: 0x5a5e6a });
+      var inPort = new THREE.Mesh(inGeo, inMat);
+      inPort.position.set(-cardW/2, 0, cardD + 0.005);
+      group.add(inPort);
+      // Port ring
+      var inRingGeo = new THREE.RingGeometry(0.09, 0.12, 16);
+      var inRingMat = new THREE.MeshBasicMaterial({ color: 0x3a3e4a, side: THREE.DoubleSide });
+      var inRing = new THREE.Mesh(inRingGeo, inRingMat);
+      inRing.position.set(-cardW/2, 0, cardD + 0.006);
+      group.add(inRing);
+    }
+
+    /* Output port */
+    if (config.hasOutput) {
+      var outGeo = new THREE.CircleGeometry(0.09, 16);
+      var outMat = new THREE.MeshBasicMaterial({ color: 0x5a5e6a });
+      var outPort = new THREE.Mesh(outGeo, outMat);
+      outPort.position.set(cardW/2, 0, cardD + 0.005);
+      group.add(outPort);
+      var outRingGeo = new THREE.RingGeometry(0.09, 0.12, 16);
+      var outRingMat = new THREE.MeshBasicMaterial({ color: 0x3a3e4a, side: THREE.DoubleSide });
+      var outRing = new THREE.Mesh(outRingGeo, outRingMat);
+      outRing.position.set(cardW/2, 0, cardD + 0.006);
+      group.add(outRing);
+    }
+
+    /* Trigger bolt */
+    if (config.isTrigger) {
+      var bc = document.createElement('canvas');
+      bc.width = 32; bc.height = 32;
+      var bctx = bc.getContext('2d');
+      bctx.clearRect(0, 0, 32, 32);
+      bctx.font = '20px sans-serif';
+      bctx.textAlign = 'center';
+      bctx.textBaseline = 'middle';
+      bctx.fillStyle = '#e0623c';
+      bctx.fillText('⚡', 16, 16);
+      var boltTex = new THREE.CanvasTexture(bc);
+      var boltGeo = new THREE.PlaneGeometry(0.30, 0.30);
+      var boltMat = new THREE.MeshBasicMaterial({ map: boltTex, transparent: true, depthWrite: false });
+      var bolt = new THREE.Mesh(boltGeo, boltMat);
+      bolt.position.set(-cardW/2 - 0.26, 0.60, cardD + 0.005);
+      group.add(bolt);
+    }
 
     group.userData = {
-      def:       def,
-      shellMat:  shellMat,
-      accentMat: accentMat,
-      labelMat:  labelMat,
-      faceMat:   faceMat,
-      haloMat:   haloMat,
-      glowMat:   glowMat,
-      pulse:     0,
-      online:    false,
-      basePos:   new THREE.Vector3(def.p[0], def.p[1], def.p[2])
+      cardMat: cardMat,
+      borderMat: borderMat,
+      hlBorderMat: hlBorderMat,
+      glowMat: glowMat,
+      config: config,
+      executing: 0,
+      cardW: cardW,
+      cardH: cardH
     };
 
-    nodeGroup.add(group);
-    nodeMap[def.id] = group;
+    return group;
+  }
+
+  /* ================================================================
+     WORKFLOW NODES — tighter spacing for better composition
+     ================================================================ */
+  var NODES = [
+    { id:'trigger',  x:-3.2, y:0, label:'New Job',          sub:'webhook trigger',  icon:'📋', iconBg:0x1a3a2a, iconColor:'#4ecb71', isTrigger:true,  hasInput:false, hasOutput:true },
+    { id:'validate', x:-1.6, y:0, label:'Validate & Route', sub:'transform data',   icon:'⚙',  iconBg:0x2a2040, iconColor:'#a78bfa', isTrigger:false, hasInput:true,  hasOutput:true },
+    { id:'crm',      x: 0.0, y:0, label:'Update CRM',      sub:'HTTP request',     icon:'🌐', iconBg:0x1a2a3a, iconColor:'#60a5fa', isTrigger:false, hasInput:true,  hasOutput:true },
+    { id:'database', x: 1.6, y:0, label:'Log to DB',        sub:'postgres write',   icon:'🗄',  iconBg:0x1a3030, iconColor:'#34d399', isTrigger:false, hasInput:true,  hasOutput:true },
+    { id:'notify',   x: 3.2, y:0, label:'Notify Team',      sub:'slack message',    icon:'🔔', iconBg:0x3a2a1a, iconColor:'#fbbf24', isTrigger:false, hasInput:true,  hasOutput:false }
+  ];
+
+  var nodeMeshes = {};
+  NODES.forEach(function (n) {
+    var card = createNodeCard(n);
+    card.position.set(n.x, n.y, 0);
+    card.scale.set(0.001, 0.001, 0.001);
+    workflowGroup.add(card);
+    nodeMeshes[n.id] = card;
   });
 
   /* ================================================================
-     EDGES — TubeGeometry splines
+     BEZIER CONNECTIONS
      ================================================================ */
-  var EDGE_DEFS = [
-    { from:'intake',    to:'automate'   },
-    { from:'intake',    to:'integrate'  },
-    { from:'intake',    to:'operate'    },
-    { from:'automate',  to:'source'     },
-    { from:'integrate', to:'source'     },
-    { from:'operate',   to:'source'     }
+  var CONNECTIONS = [
+    { from:'trigger',  to:'validate' },
+    { from:'validate', to:'crm' },
+    { from:'crm',      to:'database' },
+    { from:'database', to:'notify' }
   ];
 
-  var OFFSETS = [
-    { y:  1.28, z:  0.98 },
-    { y:  0.00, z: -0.98 },
-    { y: -1.28, z:  0.98 },
-    { y:  1.28, z:  0.98 },
-    { y:  0.00, z: -0.98 },
-    { y: -1.28, z:  0.98 }
-  ];
+  var connObjects = [];
 
-  var EDGE_APPEAR_BASE = 1440;
-  var EDGE_APPEAR_STEP = 150;
+  CONNECTIONS.forEach(function (conn) {
+    var fromN = NODES.find(function(n){ return n.id === conn.from; });
+    var toN   = NODES.find(function(n){ return n.id === conn.to; });
+    if (!fromN || !toN) return;
 
-  var edgeGroup = new THREE.Group();
-  scene.add(edgeGroup);
+    var fromMesh = nodeMeshes[conn.from];
+    var toMesh   = nodeMeshes[conn.to];
+    var fw = fromMesh.userData.cardW;
+    var tw = toMesh.userData.cardW;
 
-  var edgeObjects = [];
+    var sx = fromN.x + fw/2;
+    var ex = toN.x - tw/2;
+    var controlOffset = (ex - sx) * 0.4;
 
-  EDGE_DEFS.forEach(function (def, idx) {
-    var from = nodeMap[def.from];
-    var to   = nodeMap[def.to];
-    if (!from || !to) return;
+    var curve = new THREE.CubicBezierCurve3(
+      new THREE.Vector3(sx, 0, 0.05),
+      new THREE.Vector3(sx + controlOffset, 0, 0.05),
+      new THREE.Vector3(ex - controlOffset, 0, 0.05),
+      new THREE.Vector3(ex, 0, 0.05)
+    );
 
-    var p0  = from.userData.basePos.clone();
-    var p1  = to.userData.basePos.clone();
-    var off = OFFSETS[idx] || { y: 0, z: 0 };
-    var mid = p0.clone().lerp(p1, 0.5);
-    mid.y += off.y;
-    mid.z += off.z;
+    var pts = curve.getPoints(50);
+    var wireGeo = new THREE.BufferGeometry().setFromPoints(pts);
 
-    var curve = new THREE.QuadraticBezierCurve3(p0, mid, p1);
-    var segs  = MOBILE ? 28 : 56;
+    /* Base wire */
+    var wireMat = new THREE.LineBasicMaterial({ color: 0x4a5060, transparent: true, opacity: 0.0 });
+    workflowGroup.add(new THREE.Line(wireGeo, wireMat));
 
-    /* Base wire tube */
-    var tubeGeo = new THREE.TubeGeometry(curve, segs, 0.024, 6, false);
-    var tubeMat = new THREE.MeshBasicMaterial({ color: 0x2e2e38, transparent: true, opacity: 0.0 });
-    edgeGroup.add(new THREE.Mesh(tubeGeo, tubeMat));
+    /* Execution wire */
+    var hlMat = new THREE.LineBasicMaterial({ color: 0x4ecb71, transparent: true, opacity: 0.0 });
+    workflowGroup.add(new THREE.Line(wireGeo.clone(), hlMat));
 
-    /* Glow tube (additive) */
-    var glowGeo = new THREE.TubeGeometry(curve, segs, 0.050, 6, false);
-    var glowMat = new THREE.MeshBasicMaterial({
-      color: 0xe0623c, transparent: true, opacity: 0.0,
-      blending: THREE.AdditiveBlending, depthWrite: false
-    });
-    edgeGroup.add(new THREE.Mesh(glowGeo, glowMat));
+    /* Arrow triangle */
+    var arrowGeo = new THREE.ConeGeometry(0.07, 0.20, 6);
+    var arrowMat = new THREE.MeshBasicMaterial({ color: 0x4a5060, transparent: true, opacity: 0.0 });
+    var arrow = new THREE.Mesh(arrowGeo, arrowMat);
+    arrow.rotation.z = -Math.PI / 2;
+    arrow.position.set(ex - 0.12, 0, 0.05);
+    workflowGroup.add(arrow);
 
-    /* Bright core (additive, thinner) */
-    var coreGeo = new THREE.TubeGeometry(curve, segs, 0.014, 4, false);
-    var coreMat = new THREE.MeshBasicMaterial({
-      color: 0xff9966, transparent: true, opacity: 0.0,
-      blending: THREE.AdditiveBlending, depthWrite: false
-    });
-    edgeGroup.add(new THREE.Mesh(coreGeo, coreMat));
-
-    edgeObjects.push({
-      def: def, curve: curve,
-      tubeMat: tubeMat, glowMat: glowMat, coreMat: coreMat,
-      lit: 0, appear: EDGE_APPEAR_BASE + idx * EDGE_APPEAR_STEP
+    connObjects.push({
+      conn: conn, curve: curve,
+      wireMat: wireMat, hlMat: hlMat, arrowMat: arrowMat,
+      lit: 0, appear: 0
     });
   });
 
-  /* ================================================================
-     PULSE PARTICLES
-     ================================================================ */
-  var MAX_P = MOBILE ? 70 : 160;
-  var pPos  = new Float32Array(MAX_P * 3);
-  var pCol  = new Float32Array(MAX_P * 3);
-  var pSiz  = new Float32Array(MAX_P);
+  var WIRE_APPEAR_BASE = 1500;
+  connObjects.forEach(function (co, idx) {
+    co.appear = WIRE_APPEAR_BASE + idx * 180;
+  });
 
+  /* ================================================================
+     EXECUTION PULSE PARTICLES
+     ================================================================ */
+  var MAX_P = 60;
+  var pPos = new Float32Array(MAX_P * 3);
+  var pCol = new Float32Array(MAX_P * 3);
+  var pSiz = new Float32Array(MAX_P);
   var pGeo = new THREE.BufferGeometry();
   pGeo.setAttribute('position', new THREE.BufferAttribute(pPos, 3));
-  pGeo.setAttribute('color',    new THREE.BufferAttribute(pCol, 3));
-  pGeo.setAttribute('size',     new THREE.BufferAttribute(pSiz, 1));
-
+  pGeo.setAttribute('color', new THREE.BufferAttribute(pCol, 3));
+  pGeo.setAttribute('size', new THREE.BufferAttribute(pSiz, 1));
   var pMat = new THREE.PointsMaterial({
-    size: 0.18, vertexColors: true, transparent: true, opacity: 1.0,
+    size: 0.24, vertexColors: true, transparent: true, opacity: 1.0,
     blending: THREE.AdditiveBlending, depthWrite: false, sizeAttenuation: true
   });
-  scene.add(new THREE.Points(pGeo, pMat));
+  workflowGroup.add(new THREE.Points(pGeo, pMat));
 
   /* ================================================================
-     AMBIENT DUST
+     ANIMATION STATE
      ================================================================ */
-  var DUST_N = MOBILE ? 120 : 280;
-  var dPos   = new Float32Array(DUST_N * 3);
-  var dCol   = new Float32Array(DUST_N * 3);
-  var dVel   = [];
+  var NODE_APPEAR = { trigger:300, validate:520, crm:740, database:960, notify:1180 };
+  var EXEC_CYCLE = 5500;
+  var EXEC_START = 2600;
+  var nextExec = EXEC_START;
 
-  for (var di = 0; di < DUST_N; di++) {
-    dPos[di*3]   = (Math.random() - 0.5) * 26;
-    dPos[di*3+1] = (Math.random() - 0.5) * 16;
-    dPos[di*3+2] = (Math.random() - 0.5) * 14 - 2;
-    var br = Math.random() * 0.42;
-    dCol[di*3]   = br * 0.9;
-    dCol[di*3+1] = br * 0.4;
-    dCol[di*3+2] = br * 0.25;
-    dVel.push({
-      x: (Math.random() - 0.5) * 0.005,
-      y: (Math.random() - 0.5) * 0.003,
-      z: (Math.random() - 0.5) * 0.002
+  var execPulses = [];
+
+  function startExec(elapsed) {
+    execPulses = [];
+    CONNECTIONS.forEach(function (conn, idx) {
+      execPulses.push({ idx: idx, t: 0, start: elapsed + idx * 380, active: false, done: false });
     });
-  }
-  var dGeo = new THREE.BufferGeometry();
-  dGeo.setAttribute('position', new THREE.BufferAttribute(dPos, 3));
-  dGeo.setAttribute('color',    new THREE.BufferAttribute(dCol, 3));
-  var dMat = new THREE.PointsMaterial({
-    size: 0.05, vertexColors: true, transparent: true, opacity: 0.65,
-    blending: THREE.AdditiveBlending, depthWrite: false, sizeAttenuation: true
-  });
-  scene.add(new THREE.Points(dGeo, dMat));
-
-  /* ================================================================
-     PULSE STATE
-     ================================================================ */
-  var ROUTES = [
-    ['intake','automate','source'],
-    ['intake','integrate','source'],
-    ['intake','operate','source']
-  ];
-
-  var pulses    = [];
-  var routeIdx  = 0;
-  var nextPulse = 1800;
-  var nextSurge = 9000;
-  var online    = false;
-  var onlineAt  = 0;
-  var events    = 0;
-
-  function spawnPulse(route, big) {
-    pulses.push({ route: route, seg: 0, t: 0, big: !!big, dead: false });
-  }
-
-  function getEdge(from, to) {
-    for (var i = 0; i < edgeObjects.length; i++) {
-      if (edgeObjects[i].def.from === from && edgeObjects[i].def.to === to)
-        return edgeObjects[i];
-    }
-    return null;
+    // Light trigger immediately
+    nodeMeshes['trigger'].userData.executing = 1.0;
   }
 
   /* ================================================================
      CAMERA
      ================================================================ */
-  var camBase = new THREE.Vector3(0, 0.8, 16);
   var mX = 0, mY = 0, tmX = 0, tmY = 0;
-
   if (!REDUCE) {
     document.addEventListener('mousemove', function (e) {
-      tmX = (e.clientX / window.innerWidth  - 0.5) * 2;
+      tmX = (e.clientX / window.innerWidth - 0.5) * 2;
       tmY = (e.clientY / window.innerHeight - 0.5) * 2;
     });
-    document.addEventListener('mouseleave', function () { tmX = 0; tmY = 0; });
   }
 
   /* ================================================================
      HELPERS
      ================================================================ */
   function easeOut3(x) { return 1 - Math.pow(1 - x, 3); }
-  function clamp01(x)  { return x < 0 ? 0 : x > 1 ? 1 : x; }
+  function easeInOut(x) { return x < 0.5 ? 4*x*x*x : 1 - Math.pow(-2*x+2,3)/2; }
+  function clamp01(x) { return x < 0 ? 0 : x > 1 ? 1 : x; }
 
   /* ================================================================
      RESIZE
      ================================================================ */
-  function onResize() {
-    W = canvas.offsetWidth  || 900;
+  window.addEventListener('resize', function () {
+    W = canvas.offsetWidth || 900;
     H = canvas.offsetHeight || 600;
     renderer.setSize(W, H);
     camera.aspect = W / H;
     camera.updateProjectionMatrix();
-  }
-  window.addEventListener('resize', onResize);
+  });
 
   /* ================================================================
      MAIN LOOP
      ================================================================ */
-  var startTime = null;
-  var lastTime  = 0;
-  var animId    = null;
+  var startTime = null, lastTime = 0, animId = null;
 
   function frame(now) {
     animId = requestAnimationFrame(frame);
-
     if (startTime === null) { startTime = now; lastTime = now; }
     var elapsed = now - startTime;
     var dt = Math.min(0.05, (now - lastTime) / 1000);
     lastTime = now;
 
-    /* ---- Node scale-in + float ---- */
-    NODE_DEFS.forEach(function (def) {
-      var mesh = nodeMap[def.id];
-      if (!mesh) return;
-      var t = clamp01((elapsed - APPEAR_TIMES[def.id]) / 420);
+    /* Node scale-in + float */
+    NODES.forEach(function (n) {
+      var mesh = nodeMeshes[n.id];
+      var t = clamp01((elapsed - NODE_APPEAR[n.id]) / 480);
       var s = easeOut3(t);
       mesh.scale.set(s, s, s);
-      mesh.position.y = def.p[1] + Math.sin(elapsed * 0.00090 + def.p[0] * 0.65) * 0.09;
-      mesh.rotation.y = Math.sin(elapsed * 0.00055 + def.p[0] * 0.4) * 0.048;
+      mesh.position.y = n.y + Math.sin(elapsed * 0.0007 + n.x * 0.4) * 0.035;
     });
 
-    /* ---- Edge draw-in ---- */
-    edgeObjects.forEach(function (eo) {
-      var t = clamp01((elapsed - eo.appear) / 620);
-      var e = easeOut3(t);
-      eo.tubeMat.opacity = e * 0.50;
-      eo.glowMat.opacity = eo.lit * 0.74;
-      eo.coreMat.opacity = eo.lit * 0.90;
-      eo.lit *= Math.pow(0.0001, dt);
+    /* Wire appear */
+    connObjects.forEach(function (co) {
+      var t = clamp01((elapsed - co.appear) / 450);
+      co.wireMat.opacity = easeOut3(t) * 0.9;
+      co.arrowMat.opacity = easeOut3(t) * 0.9;
     });
 
-    /* ---- Spawn pulses ---- */
-    if (elapsed >= nextPulse) {
-      spawnPulse(ROUTES[routeIdx % 3], false);
-      routeIdx++;
-      nextPulse = elapsed + 920 + (routeIdx % 2 ? -130 : 130);
-    }
-    if (elapsed >= nextSurge) {
-      ROUTES.forEach(function (r) { spawnPulse(r, true); });
-      nextSurge = elapsed + 9000;
+    /* Execution cycle */
+    if (elapsed >= nextExec) {
+      startExec(elapsed);
+      nextExec = elapsed + EXEC_CYCLE;
+      if (!window.__iacOnline) window.__iacOnline = true;
     }
 
-    /* ---- Update pulses ---- */
-    var SPEED = 0.54;
-    pulses.forEach(function (p) {
-      if (p.dead) return;
-      p.t += SPEED * dt * (p.big ? 1.12 : 1.0);
-      if (p.t >= 1) {
-        var arrived = p.route[p.seg + 1];
-        var arrivedMesh = nodeMap[arrived];
-        if (arrivedMesh) arrivedMesh.userData.pulse = 1.0;
-        var eo = getEdge(p.route[p.seg], p.route[p.seg + 1]);
-        if (eo) eo.lit = 1.0;
-        if (arrived === 'source') {
-          events++;
-          if (!online) {
-            online = true; onlineAt = elapsed;
-            window.__iacOnline = true;
-            NODE_DEFS.forEach(function (d) {
-              if (nodeMap[d.id]) nodeMap[d.id].userData.pulse = 1.0;
-            });
-            edgeObjects.forEach(function (eo) { eo.lit = 1.0; });
-          }
-          p.dead = true;
-        } else { p.seg++; p.t = 0; }
-      }
-    });
-    pulses = pulses.filter(function (p) { return !p.dead; });
-
-    /* ---- Node glow ---- */
-    NODE_DEFS.forEach(function (def) {
-      var mesh = nodeMap[def.id];
-      if (!mesh) return;
-      mesh.userData.pulse = Math.max(0, mesh.userData.pulse - dt * 1.3);
-      var pulse  = mesh.userData.pulse;
-      var isLive = mesh.userData.online || (def.id === 'source' && online);
-      var hot    = Math.max(pulse, isLive ? 0.65 : 0, def.id === 'intake' ? 0.22 : 0);
-
-      mesh.userData.faceMat.opacity  = hot * 0.16;
-      mesh.userData.haloMat.opacity  = hot * 0.46;
-      mesh.userData.glowMat.opacity  = hot * 0.07;
-      mesh.userData.labelMat.opacity = 0.70 + hot * 0.28;
-      mesh.userData.accentMat.color.setRGB(
-        0.88 + hot * 0.12,
-        0.38 + hot * 0.22,
-        0.24 + hot * 0.06
-      );
-      mesh.userData.shellMat.opacity = 0.78 + hot * 0.16;
-    });
-
-    /* ---- Coral point light breathe ---- */
-    coralPt.intensity = 9.0 + Math.sin(elapsed * 0.0019) * 1.8 +
-      (online ? Math.sin(elapsed * 0.0055) * 2.8 : 0);
-
-    /* ---- Camera glide + parallax ---- */
-    mX += (tmX - mX) * 0.042;
-    mY += (tmY - mY) * 0.042;
-
-    var gt = elapsed * 0.000092;
-    camera.position.x = camBase.x + Math.sin(gt) * 1.6 + mX * 2.4;
-    camera.position.y = camBase.y + Math.cos(gt * 0.60) * 0.65 - mY * 1.5;
-    camera.position.z = camBase.z + Math.sin(gt * 0.34) * 1.1;
-    camera.lookAt(0, 0, 0);
-
-    /* ---- Dust drift ---- */
-    for (var di = 0; di < DUST_N; di++) {
-      dPos[di*3]   += dVel[di].x;
-      dPos[di*3+1] += dVel[di].y;
-      dPos[di*3+2] += dVel[di].z;
-      if (dPos[di*3]   >  13) dPos[di*3]   = -13;
-      if (dPos[di*3]   < -13) dPos[di*3]   =  13;
-      if (dPos[di*3+1] >   8) dPos[di*3+1] =  -8;
-      if (dPos[di*3+1] <  -8) dPos[di*3+1] =   8;
-    }
-    dGeo.attributes.position.needsUpdate = true;
-
-    /* ---- Pulse particles ---- */
+    /* Update execution pulses */
     var pIdx = 0;
-    pulses.forEach(function (p) {
-      if (p.dead || pIdx >= MAX_P - 7) return;
-      var eo = getEdge(p.route[p.seg], p.route[p.seg + 1]);
-      if (!eo) return;
-      var pt = eo.curve.getPoint(p.t);
-      pPos[pIdx*3] = pt.x; pPos[pIdx*3+1] = pt.y; pPos[pIdx*3+2] = pt.z;
-      pCol[pIdx*3] = p.big ? 1.0 : 0.92;
-      pCol[pIdx*3+1] = p.big ? 0.54 : 0.42;
-      pCol[pIdx*3+2] = p.big ? 0.30 : 0.22;
-      pSiz[pIdx] = p.big ? 0.26 : 0.18;
-      pIdx++;
-      for (var tr = 1; tr <= 5 && pIdx < MAX_P; tr++) {
-        var trT  = Math.max(0, p.t - tr * 0.040);
-        var trPt = eo.curve.getPoint(trT);
-        var fa   = (1 - tr / 6) * 0.52;
-        pPos[pIdx*3] = trPt.x; pPos[pIdx*3+1] = trPt.y; pPos[pIdx*3+2] = trPt.z;
-        pCol[pIdx*3] = fa * 0.92; pCol[pIdx*3+1] = fa * 0.42; pCol[pIdx*3+2] = fa * 0.22;
-        pSiz[pIdx] = (p.big ? 0.20 : 0.12) * (1 - tr / 6);
+    execPulses.forEach(function (ep) {
+      if (ep.done) return;
+      if (!ep.active && elapsed >= ep.start) ep.active = true;
+      if (!ep.active) return;
+
+      var progress = clamp01((elapsed - ep.start) / 750);
+      ep.t = easeInOut(progress);
+
+      if (progress >= 1) {
+        ep.done = true;
+        var destId = CONNECTIONS[ep.idx].to;
+        nodeMeshes[destId].userData.executing = 1.0;
+        connObjects[ep.idx].lit = 1.0;
+        return;
+      }
+
+      connObjects[ep.idx].lit = Math.max(connObjects[ep.idx].lit, 0.9);
+
+      // Pulse particle
+      if (pIdx < MAX_P - 4) {
+        var pt = connObjects[ep.idx].curve.getPoint(ep.t);
+        pPos[pIdx*3] = pt.x; pPos[pIdx*3+1] = pt.y; pPos[pIdx*3+2] = pt.z;
+        pCol[pIdx*3] = 0.30; pCol[pIdx*3+1] = 0.80; pCol[pIdx*3+2] = 0.44;
+        pSiz[pIdx] = 0.30;
         pIdx++;
+        for (var tr = 1; tr <= 3 && pIdx < MAX_P; tr++) {
+          var trT = Math.max(0, ep.t - tr * 0.07);
+          var trPt = connObjects[ep.idx].curve.getPoint(trT);
+          var fade = 1 - tr / 4;
+          pPos[pIdx*3] = trPt.x; pPos[pIdx*3+1] = trPt.y; pPos[pIdx*3+2] = trPt.z;
+          pCol[pIdx*3] = 0.18*fade; pCol[pIdx*3+1] = 0.55*fade; pCol[pIdx*3+2] = 0.28*fade;
+          pSiz[pIdx] = 0.18 * fade;
+          pIdx++;
+        }
       }
     });
+
+    // Clear completed cycle
+    if (execPulses.length > 0 && execPulses.every(function(ep){ return ep.done; })) {
+      execPulses = [];
+    }
+
     for (var zi = pIdx; zi < MAX_P; zi++) {
       pPos[zi*3] = 0; pPos[zi*3+1] = -999; pPos[zi*3+2] = 0;
     }
     pGeo.attributes.position.needsUpdate = true;
-    pGeo.attributes.color.needsUpdate    = true;
-    pGeo.attributes.size.needsUpdate     = true;
+    pGeo.attributes.color.needsUpdate = true;
+    pGeo.attributes.size.needsUpdate = true;
+
+    /* Node execution glow */
+    NODES.forEach(function (n) {
+      var mesh = nodeMeshes[n.id];
+      mesh.userData.executing = Math.max(0, mesh.userData.executing - dt * 0.55);
+      var ex = mesh.userData.executing;
+      mesh.userData.hlBorderMat.opacity = ex * 1.0;
+      mesh.userData.glowMat.opacity = ex * 0.35;
+      if (mesh.userData.cardMat.emissive) {
+        mesh.userData.cardMat.emissiveIntensity = ex * 0.12;
+        mesh.userData.cardMat.emissive.setRGB(0.2, 0.8, 0.4);
+      }
+    });
+
+    /* Wire glow decay */
+    connObjects.forEach(function (co) {
+      co.hlMat.opacity = co.lit * 0.80;
+      co.lit = Math.max(0, co.lit - dt * 0.9);
+    });
+
+    /* Camera drift + parallax */
+    mX += (tmX - mX) * 0.025;
+    mY += (tmY - mY) * 0.025;
+    var gt = elapsed * 0.00006;
+    camera.position.x = 0.4 + Math.sin(gt) * 0.5 + mX * 1.0;
+    camera.position.y = 3.0 + Math.cos(gt * 0.7) * 0.15 - mY * 0.5;
+    camera.position.z = 14.0 + Math.sin(gt * 0.5) * 0.25;
+    camera.lookAt(0.4, 0.5, 0);
 
     renderer.render(scene, camera);
   }
 
   /* ================================================================
-     STATIC FALLBACK (reduced motion)
+     STATIC FALLBACK
      ================================================================ */
   function renderStatic() {
-    NODE_DEFS.forEach(function (def) {
-      var mesh = nodeMap[def.id];
-      if (!mesh) return;
+    NODES.forEach(function (n) {
+      var mesh = nodeMeshes[n.id];
       mesh.scale.set(1, 1, 1);
-      var hot = 0;
-      if (def.id === 'source') {
-        mesh.userData.online = true;
-        hot = 0.85;
-      } else if (def.id === 'intake') {
-        hot = 0.3;
-      }
-      mesh.userData.faceMat.opacity  = hot * 0.14;
-      mesh.userData.haloMat.opacity  = hot * 0.42;
-      mesh.userData.glowMat.opacity  = hot * 0.06;
-      mesh.userData.labelMat.opacity = 0.70 + hot * 0.28;
-      if (hot > 0) {
-        mesh.userData.accentMat.color.setRGB(
-          0.88 + hot * 0.12, 0.38 + hot * 0.22, 0.24 + hot * 0.06
-        );
-      }
+      mesh.userData.executing = (n.id === 'database' || n.id === 'notify') ? 0.7 : 0.2;
+      mesh.userData.hlBorderMat.opacity = mesh.userData.executing * 0.9;
+      mesh.userData.glowMat.opacity = mesh.userData.executing * 0.18;
     });
-    edgeObjects.forEach(function (eo) {
-      eo.tubeMat.opacity = 0.46;
-      eo.glowMat.opacity = 0.32;
-      eo.coreMat.opacity = 0.42;
+    connObjects.forEach(function (co) {
+      co.wireMat.opacity = 0.75;
+      co.arrowMat.opacity = 0.75;
+      co.hlMat.opacity = 0.45;
     });
-    online = true;
     window.__iacOnline = true;
     renderer.render(scene, camera);
   }
@@ -655,9 +569,8 @@
   }, REDUCE ? 0 : 60);
 
   document.addEventListener('visibilitychange', function () {
-    if (document.hidden && animId) {
-      cancelAnimationFrame(animId); animId = null;
-    } else if (!document.hidden && !REDUCE && !animId) {
+    if (document.hidden && animId) { cancelAnimationFrame(animId); animId = null; }
+    else if (!document.hidden && !REDUCE && !animId) {
       lastTime = performance.now();
       animId = requestAnimationFrame(frame);
     }
