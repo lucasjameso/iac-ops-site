@@ -6,335 +6,669 @@
 <title>Innovative Access Consultants — We build the systems that run your operation.</title>
 <meta name="description" content="IAC designs and builds custom operational platforms — automation, data, and workflow systems — for construction, access, and field-service companies. Less manual work. Faster answers. One source of truth." />
 <meta name="theme-color" content="#F6F3EE" />
-<script>document.documentElement.className+=' js';</script>
+<script>document.documentElement.className += ' js';</script>
 <link rel="icon" href="favicon.svg" type="image/svg+xml" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&display=swap" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" />
 <link rel="canonical" href="https://iac-ops.com/" />
 
 <!-- Open Graph / Twitter -->
-<meta property="og:type" content="website" />
-<meta property="og:url" content="https://iac-ops.com/" />
-<meta property="og:title" content="Innovative Access Consultants — We build the systems that run your operation." />
-<meta property="og:description" content="Custom operational platforms — automation, data, and workflow systems — for construction, access, and field-service companies." />
-<meta property="og:image" content="https://iac-ops.com/og.png" />
-<meta property="og:image:width" content="1200" />
+<meta property="og:type"         content="website" />
+<meta property="og:url"          content="https://iac-ops.com/" />
+<meta property="og:title"        content="Innovative Access Consultants — We build the systems that run your operation." />
+<meta property="og:description"  content="Custom operational platforms — automation, data, and workflow systems — for construction, access, and field-service companies." />
+<meta property="og:image"        content="https://iac-ops.com/og.png" />
+<meta property="og:image:width"  content="1200" />
 <meta property="og:image:height" content="630" />
-<meta name="twitter:card" content="summary_large_image" />
-<meta name="twitter:title" content="Innovative Access Consultants" />
+<meta name="twitter:card"        content="summary_large_image" />
+<meta name="twitter:title"       content="Innovative Access Consultants" />
 <meta name="twitter:description" content="We build the systems that run your operation." />
-<meta name="twitter:image" content="https://iac-ops.com/og.png" />
+<meta name="twitter:image"       content="https://iac-ops.com/og.png" />
 
 <style>
-  /* ---------- Fonts ---------- */
-  @font-face{
-    font-family:'DM Sans';
-    src:url('fonts/DMSans-VariableFont_opsz_wght.ttf') format('truetype-variations');
-    font-weight:100 1000; font-style:normal; font-display:swap;
-  }
-  @font-face{
-    font-family:'DM Mono';
-    src:url('fonts/DMMono-Light.ttf') format('truetype');
-    font-weight:300; font-style:normal; font-display:swap;
-  }
-  @font-face{
-    font-family:'DM Mono';
-    src:url('fonts/DMMono-Regular.ttf') format('truetype');
-    font-weight:400; font-style:normal; font-display:swap;
-  }
-  @font-face{
-    font-family:'DM Mono';
-    src:url('fonts/DMMono-Medium.ttf') format('truetype');
-    font-weight:500; font-style:normal; font-display:swap;
-  }
+/* ================================================================
+   DESIGN TOKENS
+   ================================================================ */
+:root {
+  --cream:        #F6F3EE;
+  --cream-dark:   #EDE8DF;
+  --ink:          #1A1A1A;
+  --gray-dark:    #333333;
+  --gray-mid:     #666666;
+  --gray-line:    #D4D0C8;
+  --coral:        #C75B3F;
+  --coral-bright: #E0623C;
+  --coral-hover:  #B5513A;
 
-  /* ---------- Tokens (Build What Lasts) ---------- */
-  :root{
-    --cream:#F6F3EE; --cream-dark:#EDE8DF; --white:#FFFFFF;
-    --black:#000000; --near-black:#1A1A1A; --gray-dark:#333333;
-    --gray-mid:#666666; --gray-line:#D4D0C8;
-    --coral:#C75B3F; --coral-hover:#B5513A; --coral-deep:#DA572F;
-    --font-serif:'Playfair Display',Georgia,serif;
-    --font-sans:'DM Sans',system-ui,sans-serif;
-    --font-mono:'DM Mono',ui-monospace,monospace;
-  }
+  --font-serif: 'Playfair Display', Georgia, serif;
+  --font-sans:  'DM Sans', system-ui, sans-serif;
+  --font-mono:  'DM Mono', ui-monospace, monospace;
 
-  *{box-sizing:border-box;}
-  html,body{margin:0;padding:0;}
-  html{-webkit-text-size-adjust:100%;}
-  body{
-    background:var(--cream); color:var(--black);
-    font-family:var(--font-serif); font-size:18px; line-height:1.8;
-    -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
-    min-height:100vh; min-height:100dvh; overflow-x:hidden;
-  }
-  ::selection{background:var(--coral); color:#fff;}
-  a{color:inherit;}
-  :focus-visible{outline:2px solid var(--coral); outline-offset:3px;}
+  --pad-h: clamp(28px, 4.5vw, 68px);
+  --pad-v: clamp(18px, 2.4vw, 32px);
+}
 
-  /* ---------- Shell ---------- */
-  .stage{
-    position:relative; min-height:100vh; min-height:100dvh;
-    display:flex; flex-direction:column;
-  }
+/* ================================================================
+   LOCAL FONTS
+   ================================================================ */
+@font-face {
+  font-family: 'DM Sans';
+  src: url('fonts/DMSans-VariableFont_opsz_wght.ttf') format('truetype-variations');
+  font-weight: 100 1000; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: 'DM Mono';
+  src: url('fonts/DMMono-Light.ttf') format('truetype');
+  font-weight: 300; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: 'DM Mono';
+  src: url('fonts/DMMono-Regular.ttf') format('truetype');
+  font-weight: 400; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: 'DM Mono';
+  src: url('fonts/DMMono-Medium.ttf') format('truetype');
+  font-weight: 500; font-style: normal; font-display: swap;
+}
 
-  /* ---------- Top bar ---------- */
-  .topbar{
-    position:relative; z-index:6;
-    display:flex; align-items:center; justify-content:space-between;
-    gap:16px; padding:22px clamp(20px,4vw,56px);
-    border-bottom:1px solid var(--gray-line);
-  }
-  .wordmark{
-    display:flex; align-items:center; gap:12px;
-    font-family:var(--font-mono); font-weight:500;
-    font-size:13px; letter-spacing:2px; text-transform:uppercase;
-    color:var(--coral-deep); text-decoration:none;
-  }
-  .wordmark .mark{
-    width:13px; height:13px; background:var(--coral); flex:none;
-    transform:rotate(45deg);
-  }
-  .wordmark .full{color:var(--near-black);}
-  .topbar .status-pill{
-    display:flex; align-items:center; gap:9px;
-    font-family:var(--font-mono); font-size:11px; letter-spacing:1.5px;
-    text-transform:uppercase; color:var(--gray-mid);
-  }
-  .topbar .dot{
-    width:8px; height:8px; background:var(--coral); flex:none;
-    position:relative;
-  }
+/* ================================================================
+   RESET
+   ================================================================ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  background: var(--cream);
+  color: var(--ink);
+  font-family: var(--font-serif);
+  font-size: 18px;
+  line-height: 1.8;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  min-height: 100vh;
+  min-height: 100dvh;
+  overflow-x: hidden;
+}
+::selection { background: var(--coral-bright); color: #fff; }
+a { color: inherit; }
+:focus-visible { outline: 2px solid var(--coral-bright); outline-offset: 3px; }
 
-  /* ---------- Hero grid ---------- */
-  .hero{
-    position:relative; z-index:2; flex:1;
-    display:grid; grid-template-columns:minmax(0,0.84fr) minmax(0,1.16fr);
-    align-items:stretch;
-  }
-  .hero__copy{
-    display:flex; flex-direction:column; justify-content:center;
-    gap:15px; padding:clamp(20px,2.6vw,30px) clamp(20px,4vw,72px);
-    max-width:680px;
-  }
-  .hero__stagewrap{
-    position:relative;
-    border-left:1px solid var(--near-black);
-    background:#131313;
-    overflow:hidden;
-  }
-  #graph{position:absolute; inset:0; width:100%; height:100%; display:block;}
+/* ================================================================
+   STAGE
+   ================================================================ */
+.stage {
+  position: relative;
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  background: var(--cream);
+}
 
-  /* blueprint corner ticks */
-  .hero__stagewrap::before,
-  .hero__stagewrap::after{
-    content:""; position:absolute; width:14px; height:14px; z-index:3;
-    border:1px solid rgba(255,255,255,0.28);
-  }
-  .hero__stagewrap::before{top:18px; left:18px; border-right:0; border-bottom:0;}
-  .hero__stagewrap::after{bottom:18px; right:18px; border-left:0; border-top:0;}
+/* ================================================================
+   TOP BAR
+   ================================================================ */
+.topbar {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: var(--pad-v) var(--pad-h);
+  border-bottom: 1px solid var(--gray-line);
+  background: var(--cream);
+}
 
-  /* ---------- Copy elements ---------- */
-  .eyebrow{
-    font-family:var(--font-mono); font-size:11px; letter-spacing:3px;
-    text-transform:uppercase; color:var(--coral); margin:0;
-  }
-  h1.headline{
-    font-family:var(--font-serif); font-weight:500;
-    font-size:clamp(34px,4.3vw,54px); line-height:1.05;
-    letter-spacing:-0.02em; margin:0; color:var(--near-black);
-    text-wrap:balance;
-  }
-  h1.headline .ul-word{position:relative; display:inline-block;}
-  h1.headline .ul-word .ul{
-    position:absolute; left:0; right:-0.04em; bottom:0.02em; height:3px;
-    background:var(--coral); transform-origin:left center;
-  }
-  .lede{
-    font-family:var(--font-serif); font-size:clamp(17px,1.35vw,20px);
-    line-height:1.65; color:var(--gray-dark); margin:0; max-width:46ch;
-  }
-  .lede b{font-weight:700; color:var(--near-black);}
+/* Hairline draw-on */
+.topbar::after {
+  content: '';
+  position: absolute;
+  bottom: -1px; left: 0;
+  height: 1px;
+  background: var(--coral-bright);
+  width: 0;
+  transition: width 1.6s cubic-bezier(0.65, 0, 0.35, 1);
+}
+.is-ready .topbar::after { width: 100%; }
 
-  .status{
-    display:flex; align-items:center; gap:11px;
-    font-family:var(--font-mono); font-size:12px; letter-spacing:1.4px;
-    text-transform:uppercase; color:var(--gray-mid); margin:0;
-  }
-  .status .live{
-    width:9px; height:9px; background:var(--coral); flex:none;
-  }
+.wordmark {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  font-family: var(--font-mono);
+  font-weight: 500;
+  font-size: 11.5px;
+  letter-spacing: 2.8px;
+  text-transform: uppercase;
+  color: var(--ink);
+  text-decoration: none;
+  transition: opacity 0.2s ease;
+}
+.wordmark:hover { opacity: 0.65; }
 
-  /* capabilities */
-  .caps{
-    list-style:none; margin:6px 0 0; padding:0;
-    display:grid; gap:0; border-top:1px solid var(--gray-line);
-  }
-  .caps li{
-    display:grid; grid-template-columns:auto 1fr; align-items:baseline;
-    gap:14px; padding:10px 0; border-bottom:1px solid var(--gray-line);
-  }
-  .caps .k{
-    font-family:var(--font-mono); font-weight:500; font-size:12px;
-    letter-spacing:1.5px; text-transform:uppercase; color:var(--coral);
-    min-width:88px;
-  }
-  .caps .v{
-    font-family:var(--font-sans); font-weight:400; font-size:15px;
-    line-height:1.5; color:var(--gray-dark);
-  }
+.wordmark__diamond {
+  width: 10px;
+  height: 10px;
+  background: var(--coral-bright);
+  flex: none;
+  transform: rotate(45deg);
+  transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.wordmark:hover .wordmark__diamond { transform: rotate(225deg); }
 
-  /* CTA */
-  .cta-row{display:flex; align-items:center; gap:22px; flex-wrap:wrap; margin-top:4px;}
-  .btn{
-    display:inline-flex; align-items:center; gap:10px;
-    font-family:var(--font-sans); font-weight:700; font-size:14px;
-    letter-spacing:0.08em; text-transform:uppercase;
-    background:var(--coral); color:#fff; text-decoration:none;
-    padding:15px 30px; border:0; cursor:pointer;
-    transition:background-color .15s ease;
-  }
-  .btn:hover{background:var(--coral-hover);}
-  .btn .arr{transition:transform .2s ease;}
-  .btn:hover .arr{transform:translateX(4px);}
-  .mailto{
-    font-family:var(--font-mono); font-size:13px; letter-spacing:0.5px;
-    color:var(--gray-mid); text-decoration:none; border-bottom:1px solid var(--gray-line);
-    padding-bottom:2px; transition:color .2s ease, border-color .2s ease;
-  }
-  .mailto:hover{color:var(--near-black); border-color:var(--coral);}
+.topbar__status {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--gray-mid);
+}
+.topbar__dot {
+  width: 7px;
+  height: 7px;
+  background: var(--coral-bright);
+  flex: none;
+  border-radius: 50%;
+}
 
-  /* ---------- Footer ---------- */
-  .footer{
-    position:relative; z-index:6;
-    display:flex; align-items:center; justify-content:space-between;
-    gap:16px; flex-wrap:wrap;
-    padding:16px clamp(20px,4vw,56px);
-    border-top:1px solid var(--gray-line);
-    font-family:var(--font-mono); font-size:11px; letter-spacing:1.2px;
-    text-transform:uppercase; color:var(--gray-mid);
-  }
+/* ================================================================
+   HERO GRID
+   ================================================================ */
+.hero {
+  position: relative;
+  z-index: 2;
+  flex: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 0.80fr) minmax(0, 1.20fr);
+  align-items: stretch;
+  min-height: 0;
+}
 
-  /* ---------- Entrance animation ---------- */
-  .reveal{opacity:1;}
-  .js .reveal{opacity:0; transform:translateY(14px);}
-  .is-ready .reveal{
-    animation:rise .9s cubic-bezier(.22,.61,.36,1) forwards;
-    animation-delay:var(--d,0s);
-  }
-  @keyframes rise{to{opacity:1; transform:translateY(0);}}
+/* ---- Copy column ---- */
+.hero__copy {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: clamp(12px, 1.4vw, 18px);
+  padding: clamp(24px, 3vw, 52px) var(--pad-h);
+  padding-right: clamp(24px, 2.8vw, 52px);
+  max-width: 720px;
+}
 
-  /* headline word mask */
-  .headline .word{display:inline-block; overflow:hidden; vertical-align:top; padding-bottom:0.14em; margin-bottom:-0.14em;}
-  .headline .word > span{display:inline-block;}
-  .js .headline .word > span{transform:translateY(110%);}
-  .is-ready .headline .word > span{
-    animation:wordup .85s cubic-bezier(.22,.61,.36,1) forwards;
-    animation-delay:var(--wd,0s);
-  }
-  @keyframes wordup{to{transform:translateY(0);}}
-  .headline .ul-word .ul{transform:scaleX(1);}
-  .js .headline .ul-word .ul{transform:scaleX(0);}
-  .is-ready .headline .ul-word .ul{
-    animation:draw .7s cubic-bezier(.65,0,.35,1) forwards;
-    animation-delay:1.4s;
-  }
-  @keyframes draw{to{transform:scaleX(1);}}
+/* ---- 3D scene column ---- */
+.hero__scene {
+  position: relative;
+  border-left: 1px solid var(--ink);
+  background: #0a0a0a;
+  overflow: hidden;
+}
 
-  /* status live pulse */
-  .live, .topbar .dot{animation:livepulse 2.4s ease-in-out infinite;}
-  @keyframes livepulse{
-    0%,100%{box-shadow:0 0 0 0 rgba(199,91,63,.5);}
-    50%{box-shadow:0 0 0 5px rgba(199,91,63,0);}
-  }
+/* Vignette overlay for depth */
+.hero__scene-vignette {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 80% 80% at 50% 50%, transparent 40%, rgba(10,10,10,0.55) 100%),
+    linear-gradient(to bottom, rgba(10,10,10,0.35) 0%, transparent 20%, transparent 80%, rgba(10,10,10,0.35) 100%),
+    linear-gradient(to right, rgba(10,10,10,0.5) 0%, transparent 18%, transparent 82%, rgba(10,10,10,0.5) 100%);
+}
 
-  /* ---------- Responsive ---------- */
-  @media (max-width:900px){
-    .hero{grid-template-columns:1fr; }
-    .hero__stagewrap{
-      order:-1; border-left:0; border-bottom:1px solid var(--gray-line);
-      min-height:42vh;
-    }
-    .hero__copy{max-width:none; padding-top:clamp(28px,7vw,48px); padding-bottom:clamp(28px,7vw,48px);}
-    h1.headline{font-size:clamp(32px,8vw,48px);}
-  }
-  @media (max-width:520px){
-    .topbar .full{display:none;}
-    .caps .k{min-width:0;}
-    .caps li{grid-template-columns:1fr; gap:3px;}
-  }
+/* Blueprint corner ticks */
+.hero__scene::before,
+.hero__scene::after {
+  content: '';
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  z-index: 4;
+  border: 1px solid rgba(255, 255, 255, 0.20);
+  pointer-events: none;
+}
+.hero__scene::before { top: 22px;    left: 22px;    border-right: 0; border-bottom: 0; }
+.hero__scene::after  { bottom: 22px; right: 22px;   border-left: 0;  border-top: 0;    }
 
-  /* ---------- Reduced motion ---------- */
-  @media (prefers-reduced-motion:reduce){
-    .reveal{opacity:1 !important; transform:none !important; animation:none !important;}
-    .headline .word > span{transform:none !important; animation:none !important;}
-    .headline .ul-word .ul{transform:scaleX(1) !important; animation:none !important;}
-    .live, .topbar .dot{animation:none !important;}
+/* Scene overlays */
+.scene-label {
+  position: absolute;
+  top: 22px;
+  left: 50px;
+  z-index: 5;
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.28);
+  pointer-events: none;
+}
+
+.scene-status {
+  position: absolute;
+  bottom: 22px;
+  left: 22px;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.38);
+  pointer-events: none;
+}
+.scene-status__dot {
+  width: 6px;
+  height: 6px;
+  background: var(--coral-bright);
+  border-radius: 50%;
+  flex: none;
+}
+
+#hero-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* ================================================================
+   COPY ELEMENTS
+   ================================================================ */
+
+/* Eyebrow */
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 3.5px;
+  text-transform: uppercase;
+  color: var(--coral-bright);
+}
+
+/* Headline */
+h1.headline {
+  font-family: var(--font-serif);
+  font-weight: 500;
+  font-size: clamp(40px, 4.8vw, 66px);
+  line-height: 1.02;
+  letter-spacing: -0.026em;
+  color: var(--ink);
+  text-wrap: balance;
+}
+
+/* Word-mask reveal */
+.headline .word {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: top;
+  padding-bottom: 0.12em;
+  margin-bottom: -0.12em;
+}
+.headline .word > span { display: inline-block; }
+.js .headline .word > span { transform: translateY(115%); }
+.is-ready .headline .word > span {
+  animation: word-rise 0.92s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+  animation-delay: var(--wd, 0s);
+}
+@keyframes word-rise { to { transform: translateY(0); } }
+
+/* Underline draw */
+.headline .ul-word { position: relative; display: inline-block; }
+.headline .ul-word .ul {
+  position: absolute;
+  left: 0; right: -0.04em; bottom: 0.05em;
+  height: 3px;
+  background: var(--coral-bright);
+  transform-origin: left center;
+}
+.js .headline .ul-word .ul { transform: scaleX(0); }
+.is-ready .headline .ul-word .ul {
+  animation: ul-draw 0.78s cubic-bezier(0.65, 0, 0.35, 1) forwards;
+  animation-delay: 1.6s;
+}
+@keyframes ul-draw { to { transform: scaleX(1); } }
+
+/* Lede */
+.lede {
+  font-family: var(--font-serif);
+  font-size: clamp(18px, 1.5vw, 22px);
+  line-height: 1.68;
+  color: var(--gray-dark);
+  max-width: 50ch;
+}
+.lede strong {
+  font-weight: 600;
+  color: var(--ink);
+}
+
+/* Status */
+.status {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  letter-spacing: 1.8px;
+  text-transform: uppercase;
+  color: var(--gray-mid);
+}
+.status__dot {
+  width: 8px;
+  height: 8px;
+  background: var(--coral-bright);
+  flex: none;
+  border-radius: 50%;
+}
+
+/* Capabilities */
+.caps {
+  list-style: none;
+  border-top: 1px solid var(--gray-line);
+  margin-top: 2px;
+}
+.caps li {
+  display: grid;
+  grid-template-columns: 100px 1fr;
+  align-items: baseline;
+  gap: 18px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--gray-line);
+}
+.caps__key {
+  font-family: var(--font-mono);
+  font-weight: 500;
+  font-size: 11px;
+  letter-spacing: 2.2px;
+  text-transform: uppercase;
+  color: var(--coral-bright);
+}
+.caps__val {
+  font-family: var(--font-sans);
+  font-weight: 400;
+  font-size: 15px;
+  line-height: 1.55;
+  color: var(--gray-dark);
+}
+
+/* CTA */
+.cta-row {
+  display: flex;
+  align-items: center;
+  gap: 26px;
+  flex-wrap: wrap;
+  margin-top: 4px;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  font-family: var(--font-sans);
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  background: var(--coral-bright);
+  color: #fff;
+  text-decoration: none;
+  padding: 17px 34px;
+  border: 0;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: background-color 0.15s ease;
+}
+.btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.12) 0%, transparent 60%);
+  pointer-events: none;
+}
+.btn:hover { background: var(--coral-hover); }
+.btn__arrow { transition: transform 0.22s ease; }
+.btn:hover .btn__arrow { transform: translateX(5px); }
+
+.mailto-link {
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  letter-spacing: 0.6px;
+  color: var(--gray-mid);
+  text-decoration: none;
+  border-bottom: 1px solid var(--gray-line);
+  padding-bottom: 2px;
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+.mailto-link:hover { color: var(--ink); border-color: var(--coral-bright); }
+
+/* ================================================================
+   ENTRANCE ANIMATION
+   ================================================================ */
+.reveal { opacity: 1; }
+.js .reveal { opacity: 0; transform: translateY(18px); }
+.is-ready .reveal {
+  animation: rise 1.0s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+  animation-delay: var(--d, 0s);
+}
+@keyframes rise { to { opacity: 1; transform: translateY(0); } }
+
+/* Live pulse */
+.status__dot,
+.topbar__dot,
+.scene-status__dot {
+  animation: live-pulse 2.8s ease-in-out infinite;
+}
+@keyframes live-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(224, 98, 60, 0.6); }
+  50%       { box-shadow: 0 0 0 7px rgba(224, 98, 60, 0); }
+}
+
+/* ================================================================
+   FOOTER
+   ================================================================ */
+.footer {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding: 17px var(--pad-h);
+  border-top: 1px solid var(--gray-line);
+  background: var(--cream);
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 1.6px;
+  text-transform: uppercase;
+  color: var(--gray-mid);
+}
+
+/* ================================================================
+   RESPONSIVE
+   ================================================================ */
+@media (max-width: 960px) {
+  .hero {
+    grid-template-columns: 1fr;
   }
+  .hero__scene {
+    order: -1;
+    border-left: 0;
+    border-bottom: 1px solid var(--ink);
+    min-height: 48vh;
+  }
+  .hero__copy {
+    max-width: none;
+    padding-top: clamp(36px, 8vw, 60px);
+    padding-bottom: clamp(36px, 8vw, 60px);
+    padding-right: var(--pad-h);
+  }
+  h1.headline { font-size: clamp(36px, 9vw, 54px); }
+}
+
+@media (max-width: 560px) {
+  .wordmark__text { display: none; }
+  .caps li { grid-template-columns: 1fr; gap: 3px; }
+  .caps__key { min-width: 0; }
+  .hero__scene { min-height: 42vh; }
+  h1.headline { font-size: clamp(34px, 10.5vw, 48px); }
+}
+
+/* ================================================================
+   REDUCED MOTION
+   ================================================================ */
+@media (prefers-reduced-motion: reduce) {
+  .reveal {
+    opacity: 1 !important;
+    transform: none !important;
+    animation: none !important;
+  }
+  .headline .word > span {
+    transform: none !important;
+    animation: none !important;
+  }
+  .headline .ul-word .ul {
+    transform: scaleX(1) !important;
+    animation: none !important;
+  }
+  .status__dot,
+  .topbar__dot,
+  .scene-status__dot {
+    animation: none !important;
+  }
+  .topbar::after {
+    width: 100% !important;
+    transition: none !important;
+  }
+}
 </style>
 </head>
+
 <body>
-  <main class="stage" id="stage">
-    <header class="topbar">
-      <a class="wordmark" href="mailto:lucas@iac-ops.com" aria-label="Innovative Access Consultants">
-        <span class="mark" aria-hidden="true"></span>
-        <span class="full">Innovative Access Consultants</span>
-      </a>
-      <span class="status-pill"><span class="dot" aria-hidden="true"></span>IAC&nbsp;·&nbsp;iac-ops.com</span>
-    </header>
+<main class="stage" id="stage">
 
-    <section class="hero" aria-label="Innovative Access Consultants">
-      <div class="hero__copy">
-        <p class="eyebrow reveal" style="--d:.05s">Innovative Access Consultants</p>
+  <!-- ============================================================
+       TOP BAR
+       ============================================================ -->
+  <header class="topbar">
+    <a class="wordmark" href="mailto:lucas@iac-ops.com" aria-label="Innovative Access Consultants — send email">
+      <span class="wordmark__diamond" aria-hidden="true"></span>
+      <span class="wordmark__text">Innovative Access Consultants</span>
+    </a>
+    <span class="topbar__status" aria-label="Site status">
+      <span class="topbar__dot" aria-hidden="true"></span>
+      <span>IAC&nbsp;&middot;&nbsp;iac-ops.com</span>
+    </span>
+  </header>
 
-        <h1 class="headline" id="headline">
-          <span class="word" style="--wd:.10s"><span>We</span></span>
-          <span class="word" style="--wd:.17s"><span>build</span></span>
-          <span class="word" style="--wd:.24s"><span>the</span></span>
-          <span class="word" style="--wd:.31s"><span>systems</span></span>
-          <span class="word" style="--wd:.38s"><span>that</span></span>
-          <span class="word" style="--wd:.45s"><span>run</span></span>
-          <span class="word" style="--wd:.52s"><span>your</span></span>
-          <span class="ul-word"><span class="word" style="--wd:.59s"><span>operation.</span></span><span class="ul" aria-hidden="true"></span></span>
-        </h1>
+  <!-- ============================================================
+       HERO
+       ============================================================ -->
+  <section class="hero" aria-label="Innovative Access Consultants">
 
-        <p class="lede reveal" style="--d:1.25s">
-          IAC designs and builds custom operational platforms — automation, data, and
-          workflow systems — for construction, access, and field-service companies.
-          <b>Less manual work. Faster answers. One source of truth.</b>
-        </p>
+    <!-- Copy column -->
+    <div class="hero__copy">
 
-        <ul class="caps reveal" style="--d:1.5s">
-          <li><span class="k">Automate</span><span class="v">Replace the manual work that eats your week.</span></li>
-          <li><span class="k">Integrate</span><span class="v">Connect the tools you already run.</span></li>
-          <li><span class="k">Operate</span><span class="v">Dashboards and data you can actually trust.</span></li>
-        </ul>
+      <p class="eyebrow reveal" style="--d: 0.05s">
+        Innovative Access Consultants
+      </p>
 
-        <p class="status reveal" style="--d:1.75s">
-          <span class="live" aria-hidden="true"></span>
-          Platform in development · first client builds underway
-        </p>
+      <h1 class="headline" id="headline">
+        <span class="word" style="--wd: 0.10s"><span>We</span></span>&#32;<span
+             class="word" style="--wd: 0.19s"><span>build</span></span>&#32;<span
+             class="word" style="--wd: 0.28s"><span>the</span></span>&#32;<span
+             class="word" style="--wd: 0.37s"><span>systems</span></span>&#32;<span
+             class="word" style="--wd: 0.46s"><span>that</span></span>&#32;<span
+             class="word" style="--wd: 0.55s"><span>run</span></span>&#32;<span
+             class="word" style="--wd: 0.64s"><span>your</span></span>&#32;<span
+             class="ul-word"><span class="word" style="--wd: 0.73s"><span>operation.</span></span><span class="ul" aria-hidden="true"></span></span>
+      </h1>
 
-        <div class="cta-row reveal" style="--d:1.95s">
-          <a class="btn" href="mailto:lucas@iac-ops.com">Start a conversation
-            <span class="arr" aria-hidden="true">&rarr;</span>
-          </a>
-          <a class="mailto" href="mailto:lucas@iac-ops.com">lucas@iac-ops.com</a>
-        </div>
+      <p class="lede reveal" style="--d: 1.35s">
+        IAC designs and builds custom operational platforms for construction,
+        access, and field-service companies. Automation, data pipelines, and
+        workflow systems that replace manual work, surface answers faster, and
+        give you <strong>one source of truth.</strong>
+      </p>
+
+      <ul class="caps reveal" style="--d: 1.60s" aria-label="Core capabilities">
+        <li>
+          <span class="caps__key">Automate</span>
+          <span class="caps__val">Replace the manual work that eats your week.</span>
+        </li>
+        <li>
+          <span class="caps__key">Integrate</span>
+          <span class="caps__val">Connect the tools you already run.</span>
+        </li>
+        <li>
+          <span class="caps__key">Operate</span>
+          <span class="caps__val">Dashboards and data you can actually trust.</span>
+        </li>
+      </ul>
+
+      <p class="status reveal" style="--d: 1.85s">
+        <span class="status__dot" aria-hidden="true"></span>
+        <span>Platform in development. First client builds underway.</span>
+      </p>
+
+      <div class="cta-row reveal" style="--d: 2.05s">
+        <a class="btn" href="mailto:lucas@iac-ops.com">
+          Start a conversation
+          <span class="btn__arrow" aria-hidden="true">&rarr;</span>
+        </a>
+        <a class="mailto-link" href="mailto:lucas@iac-ops.com">lucas@iac-ops.com</a>
       </div>
 
-      <div class="hero__stagewrap" aria-hidden="true">
-        <canvas id="graph"></canvas>
-      </div>
-    </section>
+    </div><!-- /hero__copy -->
 
-    <footer class="footer">
-      <span>Innovative Access Consultants, LLC</span>
-      <span>Est. 2026</span>
-    </footer>
-  </main>
+    <!-- 3D Scene column -->
+    <div class="hero__scene" aria-hidden="true" role="presentation">
+      <canvas id="hero-canvas"></canvas>
+      <div class="hero__scene-vignette"></div>
+      <span class="scene-label">IAC &middot; Workflow Engine</span>
+      <span class="scene-status">
+        <span class="scene-status__dot"></span>
+        <span id="scene-status-text">Initializing</span>
+      </span>
+    </div>
 
-  <script src="hero.js" defer></script>
+  </section>
+
+  <!-- ============================================================
+       FOOTER
+       ============================================================ -->
+  <footer class="footer">
+    <span>Innovative Access Consultants, LLC</span>
+    <span>Est.&nbsp;2026</span>
+  </footer>
+
+</main>
+
+<!-- Three.js r128 — bundled locally, no CDN dependency -->
+<script src="three.min.js"></script>
+<script src="hero-3d.js" defer></script>
+
+<script>
+/* Scene status text — polls for online flag set by hero-3d.js */
+(function () {
+  var el = document.getElementById('scene-status-text');
+  if (!el) return;
+  var t = setInterval(function () {
+    if (window.__iacOnline) {
+      el.textContent = 'Online';
+      clearInterval(t);
+    }
+  }, 400);
+  setTimeout(function () { clearInterval(t); }, 20000);
+})();
+</script>
+
 </body>
 </html>
