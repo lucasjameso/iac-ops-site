@@ -3,3 +3,6 @@ node_modules/
 .wrangler/
 dist/
 *.log
+
+# Claude Design handoff bundle (raw archive — not part of the deployable site)
+_design_bundle/
